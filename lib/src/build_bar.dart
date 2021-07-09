@@ -51,6 +51,7 @@ class BuildBar extends StatelessWidget {
               onTap: onButtonPress,
               slidingCardColor: backgroundColor,
               itemCount: buttons.length,
+              buttonHeight: bottomBarHeight * 0.56,
             );
           },
         ).toList(),

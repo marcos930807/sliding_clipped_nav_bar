@@ -13,7 +13,7 @@ class AnimatedButton extends StatefulWidget {
   final Color slidingCardColor;
   final Color inactiveColor;
   final int itemCount;
-
+  final double buttonHeight;
   final OnButtonPressCallback onTap;
   const AnimatedButton({
     Key? key,
@@ -27,14 +27,14 @@ class AnimatedButton extends StatefulWidget {
     required this.slidingCardColor,
     required this.inactiveColor,
     required this.itemCount,
+    required this.buttonHeight,
   }) : super(key: key);
 
   @override
   _AnimatedButtonState createState() => _AnimatedButtonState();
 }
 
-class _AnimatedButtonState extends State<AnimatedButton>
-    with SingleTickerProviderStateMixin {
+class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
 
   @override
@@ -50,13 +50,13 @@ class _AnimatedButtonState extends State<AnimatedButton>
     }
   }
 
-  Widget _buildCard(double height) {
+  Widget _buildCard() {
     final deviceWidth = MediaQuery.of(context).size.width;
 
     return Container(
       // width: 70,
       width: deviceWidth / widget.itemCount,
-      height: height,
+      height: widget.buttonHeight,
       child: SlicedCard.draw(
           cardColor: widget.slidingCardColor,
           heightFraction: Tween<double>(begin: 0.1, end: 0.4)
@@ -106,120 +106,124 @@ class _AnimatedButtonState extends State<AnimatedButton>
     final title = widget.title;
     final inactiveColor = widget.inactiveColor;
     final slidingCardColor = widget.slidingCardColor;
-    return GestureDetector(
-      onTap: () {
-        onTap(index);
-        if (_animationController.status == AnimationStatus.dismissed) {
-          _animationController.forward();
-        }
-      },
-      child: AnimatedBuilder(
-        animation: _animationController,
-        builder: (_, __) => Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              color: slidingCardColor,
-              width: 56,
-              height: 56,
-            ),
-            SlideTransition(
-              position: Tween<Offset>(
-                begin: Offset.zero,
-                end: Offset(0, -1.4),
-              ).animate(
-                CurvedAnimation(
-                  parent: _animationController,
-                  curve: Interval(0.3, 1.0),
+    return SizedBox(
+      height: widget.buttonHeight,
+      child: GestureDetector(
+        onTap: () {
+          onTap(index);
+          if (_animationController.status == AnimationStatus.dismissed) {
+            _animationController.forward();
+          }
+        },
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (_, __) => Stack(
+            alignment: Alignment.center,
+            fit: StackFit.passthrough,
+            children: [
+              Container(
+                color: slidingCardColor,
+                width: 56,
+                height: 56,
+              ),
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset.zero,
+                  end: Offset(0, -1.4),
+                ).animate(
+                  CurvedAnimation(
+                    parent: _animationController,
+                    curve: Interval(0.3, 1.0),
+                  ),
+                ),
+                child: Icon(
+                  widget.icon,
+                  size: size,
+                  color: inactiveColor,
                 ),
               ),
-              child: Icon(
-                widget.icon,
-                size: size,
-                color: inactiveColor,
-              ),
-            ),
-            SlideTransition(
-              position: Tween<Offset>(
-                begin: Offset(0, 0.8),
-                end: Offset(0, -0.8),
-              ).animate(
-                CurvedAnimation(
-                  parent: _animationController,
-                  curve: Interval(0.3, 1.0),
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, 0.8),
+                  end: Offset(0, -0.8),
+                ).animate(
+                  CurvedAnimation(
+                    parent: _animationController,
+                    curve: Interval(0.3, 1.0),
+                  ),
                 ),
+                child: _buildCard(),
               ),
-              child: _buildCard(64),
-            ),
-            SlideTransition(
-              position: Tween<Offset>(
-                begin: Offset(0, 1.6),
-                end: Offset.zero,
-              ).animate(
-                CurvedAnimation(
-                  parent: _animationController,
-                  curve: Interval(0.3, 1.0),
-                ),
-              ),
-              child: Container(
-                width: deviceWidth / widget.itemCount,
-                // color: Colors.amber,
-                alignment: Alignment.center,
-                height: textHeight(title, getTextStyle()),
-                child: Text(
-                  title,
-                  overflow: TextOverflow.clip,
-                  maxLines: 1,
-                  style: getTextStyle(),
-                ),
-              ),
-            ),
-            Transform.translate(
-              offset: Offset(0, 42),
-              child: _buildCard(56.0),
-            ),
-            Transform.translate(
-              offset: Offset(0, 25),
-              child: ScaleTransition(
-                scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, 1.6),
+                  end: Offset.zero,
+                ).animate(
                   CurvedAnimation(
                     parent: _animationController,
                     curve: Interval(0.3, 1.0),
                   ),
                 ),
                 child: Container(
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: activeColor,
+                  width: deviceWidth / widget.itemCount,
+                  // color: Colors.amber,
+                  alignment: Alignment.topCenter,
+                  height: textHeight(title, getTextStyle()),
+                  child: Text(
+                    title,
+                    overflow: TextOverflow.clip,
+                    maxLines: 1,
+                    style: getTextStyle(),
                   ),
                 ),
               ),
-            ),
-            Visibility(
-              visible: widget.isSelected && _animationController.value <= 0.3,
-              child: RippleEffect.draw(
-                size: Tween<double>(begin: 8.0, end: 56.0)
-                    .animate(
-                      CurvedAnimation(
-                        parent: _animationController,
-                        curve: Interval(0.0, 0.3),
-                      ),
-                    )
-                    .value,
-                strokeWidth: Tween<double>(begin: 24.0, end: 0.0)
-                    .animate(
-                      CurvedAnimation(
-                        parent: _animationController,
-                        curve: Interval(0.1, 0.3),
-                      ),
-                    )
-                    .value,
-                rippleColor: activeColor.withOpacity(0.3),
+              Transform.translate(
+                offset: Offset(0, 42),
+                child: _buildCard(),
               ),
-            ),
-          ],
+              Transform.translate(
+                offset: Offset(0, widget.buttonHeight * 0.4),
+                child: ScaleTransition(
+                  scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+                    CurvedAnimation(
+                      parent: _animationController,
+                      curve: Interval(0.3, 1.0),
+                    ),
+                  ),
+                  child: Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: activeColor,
+                    ),
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: widget.isSelected && _animationController.value <= 0.3,
+                child: RippleEffect.draw(
+                  size: Tween<double>(begin: 8.0, end: 56.0)
+                      .animate(
+                        CurvedAnimation(
+                          parent: _animationController,
+                          curve: Interval(0.0, 0.3),
+                        ),
+                      )
+                      .value,
+                  strokeWidth: Tween<double>(begin: 24.0, end: 0.0)
+                      .animate(
+                        CurvedAnimation(
+                          parent: _animationController,
+                          curve: Interval(0.1, 0.3),
+                        ),
+                      )
+                      .value,
+                  rippleColor: activeColor.withOpacity(0.3),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
