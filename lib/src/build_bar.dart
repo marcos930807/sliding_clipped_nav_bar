@@ -13,7 +13,7 @@ class BuildBar extends StatelessWidget {
   final Color? inactiveColor;
   final OnButtonPressCallback onButtonPress;
   final Color backgroundColor;
-
+  final double bottomBarHeight;
   const BuildBar({
     Key? key,
     required this.buttons,
@@ -23,13 +23,14 @@ class BuildBar extends StatelessWidget {
     required this.inactiveColor,
     required this.onButtonPress,
     required this.backgroundColor,
+    required this.bottomBarHeight,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       clipBehavior: Clip.hardEdge,
-      height: 100,
+      height: bottomBarHeight,
       decoration: BoxDecoration(
         color: backgroundColor,
       ),

@@ -28,6 +28,9 @@ class SlidingClippedNavBar extends StatelessWidget {
   /// background color of the bar.
   final Color backgroundColor;
 
+  /// background color of the bar.
+  final double bottomBarHeight;
+
   /// User when you want to set global active and inactive color.
   SlidingClippedNavBar({
     required this.barItems,
@@ -36,10 +39,11 @@ class SlidingClippedNavBar extends StatelessWidget {
     required Color activeColor,
     Color? inactiveColor,
     this.iconSize = 30,
+    this.bottomBarHeight = 100,
     this.backgroundColor = Colors.white,
   })  : assert(
-            !barItems.any((element) =>
-                (element.activeColor != null || element.inactiveColor != null)),
+            !barItems
+                .any((element) => (element.activeColor != null || element.inactiveColor != null)),
             '''You don\'t need to assign each item active & inactive color,
             when you already assigned global active color.'''),
         _activeColor = activeColor,
@@ -53,10 +57,11 @@ class SlidingClippedNavBar extends StatelessWidget {
     required this.selectedIndex,
     required this.onButtonPressed,
     this.iconSize = 30,
+    this.bottomBarHeight = 100,
     this.backgroundColor = Colors.white,
   })  : assert(
-            !barItems.any((element) =>
-                (element.activeColor == null || element.inactiveColor == null)),
+            !barItems
+                .any((element) => (element.activeColor == null || element.inactiveColor == null)),
             'You need to assign each item active & inactive color'),
         _activeColor = null,
         _inactiveColor = null,
@@ -73,6 +78,7 @@ class SlidingClippedNavBar extends StatelessWidget {
       backgroundColor: backgroundColor,
       onButtonPress: onButtonPressed,
       selectedIndex: selectedIndex,
+      bottomBarHeight: bottomBarHeight,
     );
   }
 }
